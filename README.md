@@ -29,9 +29,10 @@ Endpoints principales:
 | Geolocalización | `navigator.geolocation.getCurrentPosition()` con confirmación previa. |
 | Mapa interactivo | **Leaflet 1.9.4 + OpenStreetMap**, marcadores por severidad y clic para elegir punto. |
 | Cámara | `navigator.mediaDevices.getUserMedia()` + respaldo de galería y botón para detener la cámara. |
-| IndexedDB | Base `bachemap` / store `reports`: latitud, longitud, dirección, severidad, estado, foto, fecha y votos. |
+| IndexedDB | Base `bachemap` / store `reports`: latitud, longitud, dirección, severidad, estado, foto, fecha, votos, `uid`, `folio`, `updatedAt` y `lastDevice`. |
 | Diseño adaptable | Breakpoint en 899 px: dashboard de 2 columnas en escritorio, barra inferior y FAB en móvil. |
-| Privacidad y permisos | Confirmación de GPS, mensajes de permiso denegado, botón **Borrar todos mis datos**, cierre de cámara al salir y aviso de que nada se envía a un servidor. |
+| Privacidad y permisos | Confirmación de GPS, mensajes de permiso denegado, botón **Borrar todo**, cierre de cámara al salir y control para **desactivar la sincronización**. |
+| Sincronización | Dos o más dispositivos con el mismo código de sala comparten reportes en tiempo real mediante el canal público **ntfy.sh** (WebSocket). |
 
 ## Cómo ejecutar
 
@@ -94,6 +95,22 @@ bachemap/
 - `evidencias/postman/` → reporte HTML/JSON de Newman y captura del resumen.
 - `REPORTE_PRUEBAS.md` → matriz de pruebas en dos dispositivos (escritorio y móvil).
 
+## Sincronización entre dispositivos
+
+La app no tiene backend propio: usa **ntfy.sh** como canal de mensajes público y sin registro. Para compartir reportes entre un celular y una computadora:
+
+1. Abre la app en ambos dispositivos y entra a **Explorador de Reportes → ⚙ Sala**.
+2. Escribe el **mismo código de sala** en los dos (por defecto `manuelca12`).
+3. Los reportes nuevos, votos, cambios de estado y borrados se propagan por WebSocket en segundos. El botón **🔄 Sincronizar ahora** reenvía los reportes creados en ese dispositivo y **☁ Desactivar** apaga la sincronización.
+
+Detalles técnicos:
+
+- Topic: `bachemap-<sala>` en `https://ntfy.sh` (retención aproximada de 12 horas).
+- Cada reporte viaja como JSON de menos de 4 KB con `uid`, `folio`, `updatedAt` y `lastDevice`; el merge es *last-write-wins*.
+- La foto original permanece en IndexedDB del dispositivo que creó el reporte; a los demás se envía solo una **miniatura JPEG**.
+- Los reportes de ejemplo (`seed`) no se publican y el borrado masivo publica *tombstones* para eliminar los reportes sincronizados.
+- El canal es público: cualquiera que conozca el código de sala puede leer los mensajes. No uses datos personales sensibles.
+
 ## Privacidad
 
-Los reportes, fotos y coordenadas se guardan **solo en el dispositivo** mediante IndexedDB. No existe backend ni envío de datos personales. El usuario puede eliminar todo desde la pantalla *Explorador de Reportes*.
+Los reportes, fotos y coordenadas se guardan en el dispositivo mediante IndexedDB. Con la sincronización activa, el reporte (sin la foto original, solo una miniatura) y las coordenadas se envían al canal público de ntfy.sh identificado por el código de sala; el usuario puede desactivarla o cambiar de sala en *Explorador de Reportes*. El botón **Borrar todo** elimina la base local y notifica el borrado a los demás dispositivos sincronizados.

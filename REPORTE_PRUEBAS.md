@@ -84,7 +84,7 @@
 | P3-12 | Responsive móvil | Barra inferior, FAB, sin scroll horizontal | **Aprobado**: `nav.top` oculto, `nav.bot` visible, sin overflow | `capturas/p3-12-responsive-movil-dashboard.png` a `p3-14` |
 | P3-13 | Responsive tableta | Layout adaptable | **Aprobado** | `capturas/p3-15-responsive-tablet.png` |
 | P3-14 | Responsive escritorio | Dashboard de 2 columnas | **Aprobado** | `capturas/p3-16-responsive-escritorio.png` |
-| P3-15 | Privacidad y borrado | Confirmación y eliminación de datos locales | **Aprobado**: botón “Borrar todos mis datos” con confirmación | `capturas/p2-04-reportes-filtros.png` |
+| P3-15 | Privacidad, borrado y sincronización | Confirmación, borrado local/remoto y control de sincronización | **Aprobado**: botón “Borrar todo (incluye dispositivos sincronizados)”, sala configurable y opción para desactivar la sincronización | `capturas/p2-04-reportes-filtros.png` |
 
 ### Matriz por dispositivo
 
@@ -130,7 +130,7 @@ evidencias/
 2. **Datos simulados:** en la automatización se usó geolocalización de Playwright y un video Y4M de prueba como cámara. En un dispositivo real el navegador solicita los permisos al usuario y la app maneja tanto la autorización como la denegación.
 3. **Open-Meteo:** la primera solicitud puede tardar más por arranque en frío (se observó hasta 6.6 s); la aserción de Postman se fijó en < 10 s y el resto de mediciones quedó por debajo de 2 s.
 4. **Nominatim:** se usa `format=jsonv2`, `accept-language=es` y caché en `localStorage`; se respeta el uso académico y se evita el envío masivo de solicitudes.
-5. **Sin backend:** los reportes, fotos y coordenadas se guardan solo en IndexedDB. No se envían datos personales a ningún servidor; el botón “Borrar todos mis datos” elimina la base local y el caché.
+5. **Sin backend propio:** los reportes, fotos y coordenadas se guardan en IndexedDB. La sincronización opcional usa el canal público ntfy.sh: envía el reporte y una miniatura de la foto (nunca la foto original) al topic `bachemap-<sala>`; puede desactivarse y el botón “Borrar todo” elimina la base local y publica tombstones para los demás dispositivos. El mecanismo se validó con dos clientes WebSocket independientes sobre ntfy.sh (publicación, recepción y borrado).
 6. **Caché offline:** el Service Worker cachea el app shell y Leaflet; Open-Meteo y Nominatim se cachean en `localStorage`. Si no hay caché previa, la app muestra un mensaje de error controlado.
 
 ---
