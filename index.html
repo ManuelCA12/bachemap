@@ -1,0 +1,27 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BacheMap · Mi Asistente de Ubicación</title>
+<meta name="description" content="PWA académica para reportar baches con geolocalización, cámara, mapa interactivo y clima en tiempo real mediante APIs REST.">
+<meta name="theme-color" content="#070d1a"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg"><link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><link rel="stylesheet" href="style.css"></head><body>
+<header><div class="logo">📍</div><div class="brand"><b>Bache<span>Map</span></b><small>Ayuntamiento 2024-2027 | Mérida, Yucatán</small></div>
+<nav class="top"><button data-t="v1" class="on">🗺 1. Mapa &amp; Monitoreo</button><button data-t="v2">☰ 2. Explorador de Reportes <i id="cnt">0</i></button><button data-t="v3">📷 3. Capturar Reporte</button><button data-t="v4">📄 4. Detalle y Seguimiento</button></nav>
+<div class="chips"><span id="c1">☀ --</span><span id="c2">💧 --</span><span id="c3">≋ --</span><span class="ok" id="net">● PWA Sync Active</span></div><button id="install" class="ghost" hidden>⬇ Instalar app</button><button class="new" data-t="v3">⊕ Nuevo Reporte</button></header>
+<div id="banner" class="ban">● <b>MONITOREO METEOROLÓGICO VIAL:</b> <span id="bt">Consultando…</span></div>
+<main>
+<section id="v1" class="tab on"><div class="mapbox"><div class="leg" id="leg"></div><div id="map"></div><div class="alert" id="alert" hidden></div></div>
+<aside><div class="panel"><h3>Climatológico Vial <em>OPEN-METEO V2.4</em></h3><div class="g2"><div class="box">Temp. Pavimento<b id="tp">--</b><small>Rango óptimo AC-20</small></div><div class="box">Humedad Relativa<b id="hm" class="cy">--</b><small>Apto p/ emulsión</small></div><div class="box">Viento<b id="vt" class="cy">--</b><small>km/h</small></div><div class="box">Lluvia<b id="ll" class="cy">--</b><small>prob. hoy</small></div></div><div class="okbox" id="cond"></div>
+<div class="bar"><input id="city" placeholder="Buscar ciudad (API)…"><button id="go">Ir</button></div><div id="cities"></div></div>
+<div class="panel"><h3>Pronóstico 7 días <em>OPEN-METEO</em></h3><div class="chart" id="chart"><small>Cargando pronóstico…</small></div><small class="src">Fuente: api.open-meteo.com · se usa caché local si no hay red.</small></div>
+<div class="panel"><h3>Cuadrillas Municipales en Turno <em>4 Activas</em></h3><div id="crews"></div></div></aside></section>
+<section id="v2" class="tab"><div class="bar"><input id="q" placeholder="🔍 Buscar por calle, folio o colonia…"></div><div class="fl" id="fl"></div><div id="list" class="cards"></div><button id="wipe" class="ghost">🗑 Borrar todos mis datos</button></section>
+<section id="v3" class="tab"><div class="form"><h3>01 Evidencia Fotográfica</h3><video id="vid" autoplay playsinline hidden></video><img id="shot" hidden alt=""><canvas id="cv" hidden></canvas>
+<div class="row"><button id="cam" class="ghost">📷 Abrir cámara</button><button id="snap" hidden>Tomar foto</button><button id="stopcam" class="ghost" hidden>⏹ Detener cámara</button><label class="ghost btn">Galería<input id="file" type="file" accept="image/*" capture="environment" hidden></label></div>
+<h3>02 Geolocalización Automática</h3><div class="box" id="gps">Sin ubicación. <button id="getgps" class="ghost">Obtener GPS</button></div>
+<div class="box" id="perm">🔐 Permisos del dispositivo: consultando…</div>
+<h3>03 Nivel de Severidad <small>OBLIGATORIO</small></h3><div class="row"><button class="sev Leve" data-s="Leve">Leve</button><button class="sev Moderado on" data-s="Moderado">Moderado</button><button class="sev Crítico" data-s="Crítico">Crítico</button></div>
+<textarea id="note" placeholder="Observaciones (opcional): Ej. con agua estancada, cerca de parada…" maxlength="280"></textarea><div class="box">🔒 Privacidad y garantía offline: la foto, la ubicación y tus datos se guardan solo en este dispositivo mediante IndexedDB. Nada se envía a un servidor.<br><small id="store">Calculando almacenamiento…</small></div><button id="save" class="big">Enviar Reporte Oficial</button><p id="msg" aria-live="polite"></p></div></section>
+<section id="v4" class="tab"><div id="det" class="form"><p>Selecciona un reporte en el explorador.</p></div></section>
+</main>
+<nav class="bot"><button data-t="v1" class="on">🗺<br>Mapa</button><button data-t="v2">☰<br>Reportes</button><button data-t="v3" class="fab">📷</button><button data-t="v4">📄<br>Detalle</button></nav>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><script src="app.js"></script></body></html>

@@ -1,0 +1,101 @@
+{
+  "fecha": "2026-11-11T18:35:30",
+  "origin": "http://localhost:8141",
+  "capturas": [
+    "p2-01-dashboard-clima-grafico.png",
+    "p2-02-buscador-ciudades.png",
+    "p2-03-clima-ciudad-seleccionada.png",
+    "p2-04-reportes-filtros.png",
+    "p2-05-filtro-reparado.png",
+    "p2-06-busqueda-texto.png",
+    "p2-07-detalle-reporte.png",
+    "p2-08-error-servicio-api.png",
+    "p2-09-offline-cache.png",
+    "p2-10-postman-resumen.png",
+    "p2-10b-postman-completo.png",
+    "p2-11-postman-assertions.png",
+    "p2-12-lighthouse-pwa.png",
+    "p3-01-formulario-permisos.png",
+    "p3-02-geolocalizacion-gps.png",
+    "p3-03-mapa-leaflet-gps.png",
+    "p3-04-camara-dispositivo.png",
+    "p3-05-fotografia-capturada.png",
+    "p3-06-reporte-guardado.png",
+    "p3-07-reportes-con-foto.png",
+    "p3-08-detalle-reporte.png",
+    "p3-09-indexeddb-registros.png",
+    "p3-10-permiso-gps-denegado.png",
+    "p3-11-permiso-camara-denegado.png",
+    "p3-12-responsive-movil-dashboard.png",
+    "p3-13-responsive-movil-reportes.png",
+    "p3-14-responsive-movil-captura.png",
+    "p3-15-responsive-tablet.png",
+    "p3-16-responsive-escritorio.png"
+  ],
+  "checks": {
+    "dashboard": {
+      "weather": "No recomendable bachear ahora. · Mérida",
+      "chartColumns": 7,
+      "mapTiles": 20,
+      "markers": 3
+    },
+    "citySelected": "No recomendable bachear ahora. · Cancún",
+    "reportCards": 3,
+    "filteredReparado": 1,
+    "searchMontejo": 1,
+    "apiError": "Servicio de clima no disponible y sin datos en caché (Failed to fetch)",
+    "offline": {
+      "banner": "No recomendable bachear ahora. · Mérida · ⚠ caché del 11/11/2026, 18:19:44",
+      "netChip": "● Offline (IndexedDB)",
+      "reports": "3",
+      "tiles": 20
+    },
+    "gps": "✔ GPS detectado (±12 m)20.97030, -89.62380Calle 62, Centro, Mérida",
+    "permissions": "🔐 Permisos del dispositivo: Ubicación: granted · Cámara: deniedPuedes revocarlos en cualquier momento desde el candado del navegador.",
+    "camera": true,
+    "photo": true,
+    "saved": "✔ Reporte guardado en IndexedDB (funciona sin internet).",
+    "storage": "Almacenamiento local usado: 0.55 MB (cuota aprox. 10.0 GB).",
+    "indexeddbRows": 4,
+    "gpsDeniedMsg": "Permiso de ubicación denegado. Actívalo en ajustes del sitio o toca el mapa para elegir el punto.",
+    "cameraDeniedMsg": "Permiso de cámara denegado. Usa \"Galería\" o habilítalo en ajustes del navegador.",
+    "mobile": {
+      "topNavVisible": false,
+      "bottomNavVisible": true,
+      "overflowX": false
+    },
+    "manifest": {
+      "name": "BacheMap – Mi Asistente de Ubicación",
+      "short_name": "BacheMap",
+      "display": "standalone",
+      "icons": [
+        "192x192",
+        "512x512",
+        "any"
+      ]
+    },
+    "serviceWorkers": 1,
+    "hash": {
+      "#reportar": "v3",
+      "#reportes": "v2",
+      "sin hash": "v1"
+    },
+    "postman": {
+      "requests": 8,
+      "assertions": 28,
+      "failures": 0
+    },
+    "lighthouse": {
+      "pwa": 1.0,
+      "installable": true
+    },
+    "smoke": {
+      "chartCols": 7,
+      "tiles": 20,
+      "markers": 3,
+      "reports": 3,
+      "reportsAfter": 4,
+      "errors": []
+    }
+  }
+}

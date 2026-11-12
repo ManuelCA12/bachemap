@@ -1,0 +1,24 @@
+{
+  "id": "./",
+  "name": "BacheMap – Mi Asistente de Ubicación",
+  "short_name": "BacheMap",
+  "description": "PWA para reportar baches con geolocalización, cámara, mapa interactivo y clima en tiempo real (Open-Meteo).",
+  "lang": "es-MX",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#070d1a",
+  "theme_color": "#070d1a",
+  "categories": ["utilities", "navigation", "productivity"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Nuevo reporte", "short_name": "Reportar", "url": "./index.html#reportar", "description": "Capturar un bache con foto y GPS" },
+    { "name": "Explorar reportes", "short_name": "Reportes", "url": "./index.html#reportes", "description": "Buscar y filtrar reportes ciudadanos" }
+  ]
+}

@@ -1,0 +1,242 @@
+{
+  "info": {
+    "name": "BacheMap · Prácticas 2 y 3 · APIs REST",
+    "description": "Colección de validación de las APIs consumidas por BacheMap: Open-Meteo (clima y geocodificación), Nominatim (geocodificación inversa) y OpenStreetMap (tiles del mapa). Ejecutar con Postman Runner o Newman.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "forecastBase", "value": "https://api.open-meteo.com/v1/forecast" },
+    { "key": "geocodingBase", "value": "https://geocoding-api.open-meteo.com/v1/search" },
+    { "key": "nominatimBase", "value": "https://nominatim.openstreetmap.org/reverse" },
+    { "key": "lat", "value": "20.9674" },
+    { "key": "lng", "value": "-89.5926" }
+  ],
+  "item": [
+    {
+      "name": "Práctica 2 · Clima (Open-Meteo)",
+      "item": [
+        {
+          "name": "Clima actual + pronóstico 7 días",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Origin", "value": "http://localhost:8080" }
+            ],
+            "url": "{{forecastBase}}?latitude={{lat}}&longitude={{lng}}&current=temperature_2m,relative_humidity_2m,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=7&timezone=auto",
+            "description": "Endpoint principal de la app: clima actual y pronóstico de 7 días usado por las tarjetas y el gráfico."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "pm.test('CORS habilitado', () => pm.expect(pm.response.headers.get('Access-Control-Allow-Origin')).to.eql('*'));",
+                  "pm.test('Tiempo de respuesta < 10 s', () => pm.expect(pm.response.responseTime).to.be.below(10000));",
+                  "const j = pm.response.json();",
+                  "pm.test('current tiene temperatura, humedad y viento', () => {",
+                  "  pm.expect(j.current).to.have.property('temperature_2m');",
+                  "  pm.expect(j.current).to.have.property('relative_humidity_2m');",
+                  "  pm.expect(j.current).to.have.property('wind_speed_10m');",
+                  "});",
+                  "pm.test('daily contiene 7 días', () => {",
+                  "  pm.expect(j.daily.time).to.be.an('array').with.lengthOf(7);",
+                  "  pm.expect(j.daily.temperature_2m_max).to.be.an('array').with.lengthOf(7);",
+                  "  pm.expect(j.daily.precipitation_probability_max).to.be.an('array').with.lengthOf(7);",
+                  "});",
+                  "pm.test('Unidades en °C', () => pm.expect(j.current_units.temperature_2m).to.eql('°C'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Clima por ciudad (Cancún)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Origin", "value": "http://localhost:8080" }
+            ],
+            "url": "{{forecastBase}}?latitude=21.1619&longitude=-86.8515&current=temperature_2m,relative_humidity_2m,wind_speed_10m&timezone=auto",
+            "description": "Ejemplo de consulta con coordenadas de otra ciudad, equivalente a elegir una ciudad desde el buscador."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Ciudad con clima disponible', () => pm.expect(pm.response.json().current).to.have.property('temperature_2m'));",
+                  "pm.test('Zona horaria devuelta', () => pm.expect(pm.response.json()).to.have.property('timezone'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Práctica 2 · Geocodificación (Open-Meteo)",
+      "item": [
+        {
+          "name": "Buscar Mérida",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Origin", "value": "http://localhost:8080" }
+            ],
+            "url": "{{geocodingBase}}?name=Merida&count=5&language=es",
+            "description": "Alimenta el buscador de ciudades de la PWA."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('results es un arreglo', () => pm.expect(j.results).to.be.an('array'));",
+                  "pm.test('resultados con coordenadas y país', () => {",
+                  "  pm.expect(j.results[0]).to.have.property('latitude');",
+                  "  pm.expect(j.results[0]).to.have.property('longitude');",
+                  "  pm.expect(j.results[0]).to.have.property('name');",
+                  "  pm.expect(j.results[0]).to.have.property('country_code');",
+                  "});",
+                  "pm.test('Mérida aparece en los resultados', () => pm.expect(j.results.some(r => r.name === 'Mérida')).to.eql(true));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Búsqueda sin resultados",
+          "request": {
+            "method": "GET",
+            "url": "{{geocodingBase}}?name=zzzzzz&count=5&language=es",
+            "description": "Valida que la app pueda mostrar 'Sin resultados' sin romperse."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test('Sin resultados (results ausente o vacío)', () => pm.expect(!j.results || j.results.length === 0).to.eql(true));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Práctica 3 · Geolocalización inversa (Nominatim)",
+      "item": [
+        {
+          "name": "Dirección a partir de lat/lng",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "User-Agent", "value": "BacheMap-Postman-Tests/1.0 (proyecto academico)" },
+              { "key": "Origin", "value": "http://localhost:8080" }
+            ],
+            "url": "{{nominatimBase}}?format=jsonv2&accept-language=es&lat={{lat}}&lon={{lng}}",
+            "description": "Convierte las coordenadas GPS en una dirección legible para el reporte."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Responde JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const j = pm.response.json();",
+                  "pm.test('display_name presente', () => pm.expect(j.display_name).to.be.a('string').and.not.empty);",
+                  "pm.test('Incluye objeto address', () => pm.expect(j).to.have.property('address'));",
+                  "pm.test('Coordenadas cercanas a Mérida', () => {",
+                  "  pm.expect(parseFloat(j.lat)).to.be.closeTo(20.9674, 0.05);",
+                  "  pm.expect(parseFloat(j.lon)).to.be.closeTo(-89.5926, 0.05);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Práctica 3 · Mapa (OpenStreetMap)",
+      "item": [
+        {
+          "name": "Tile del mapa disponible",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "User-Agent", "value": "BacheMap-Postman-Tests/1.0 (proyecto academico)" }
+            ],
+            "url": "https://tile.openstreetmap.org/0/0/0.png",
+            "description": "Comprueba que el proveedor de tiles usado por Leaflet responde correctamente."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "pm.test('Es una imagen PNG', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('image/png'));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Práctica 2 · Control de errores",
+      "item": [
+        {
+          "name": "Latitud inválida (999)",
+          "request": {
+            "method": "GET",
+            "url": "{{forecastBase}}?latitude=999&longitude=0&current=temperature_2m",
+            "description": "La app debe manejar respuestas HTTP 400 sin romperse."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+                  "const j = pm.response.json();",
+                  "pm.test('Bandera error = true', () => pm.expect(j.error).to.eql(true));",
+                  "pm.test('Incluye motivo del error', () => pm.expect(j.reason).to.be.a('string').and.not.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Geocodificación sin parámetro name",
+          "request": {
+            "method": "GET",
+            "url": "{{geocodingBase}}?count=5&language=es",
+            "description": "Valida la respuesta de error de la API de geocodificación."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('400 Bad Request', () => pm.response.to.have.status(400));",
+                  "pm.test('Bandera error = true', () => pm.expect(pm.response.json().error).to.eql(true));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
